@@ -13,8 +13,11 @@ import java.io.FileWriter;
 public class main {
 //    private HashMap<String, Integer> _states = new HashMap<>();
 //    private HashMap<String, Integer> _jobs = new HashMap<>();
-    private static String[] _categories;
-    private static ArrayList<HashMap<String, Integer>> _counters;
+    private static ArrayList<String> _categories;
+    private static HashMap<String, HashMap<String, Integer>> _counters;
+    private static String _certKEY;
+    private static final String CERT = "CERTIFIED";
+    private static int _certs;
 
     /** Get the input files, run the reader, write to output.
      * Takes arguments of the parameters we want to list top ten lists.
@@ -25,15 +28,20 @@ public class main {
 //		if (args.length == 0) {
 //			throw new Exception();
 //		}
-		_categories = args;
-		_counters = new ArrayList<>();
-		for (int i = 0; i < _categories.length - 1; i++) {
-		    _counters.add(new HashMap<>());
+		_categories = new ArrayList<>();
+		_counters = new HashMap<>();
+		_certKEY = args[0];
+		_certs = 0;
+		for (int i = 1; i < args.length; i++) {
+		    String str = args[i];
+		    _categories.add(str);
+		    _counters.put(str, new HashMap<>());
         }
 		ArrayList<Scanner> inputs = read_Input();
 		for (int i = 0; i < inputs.size(); i++) {
             process(inputs.get(i));
 		}
+		write_out();
 	}
 
 	/** Get all the names of the files in input,
@@ -56,22 +64,49 @@ public class main {
      *  Reads the first line to get the title of each column.
      *  Then scans through each line, adding to the states and jobs HashMaps.*/
 	private static void process(Scanner s) {
-        HashMap<String, Integer> categories = new HashMap<>();
-
+        HashMap<Integer, String> cat_idx = new HashMap<>();
         if (s.hasNextLine()) {
             Scanner temp = new Scanner(s.nextLine());
             temp.useDelimiter(";");
-            int i = 0;
-            while (temp.hasNext()) {
+            for (int i = 0; temp.hasNext(); i++) {
 				String cat_i = temp.next();
-				if (categories.containsKey(cat_i)) {
-
-				}
-                i++;
+				if (_categories.contains(cat_i)) {cat_idx.put(i, cat_i);}
             }
             while (s.hasNextLine()) {
-            	temp = new Scanner(s.nextLine());
+                String line = s.nextLine();
+                if (line.contains(_certKEY)) {
+                    _certs++;
+                    temp = new Scanner(line);
+                    temp.useDelimiter(";");
+                    for (int i = 0; temp.hasNext(); i++) {
+                        String data = temp.next();
+                        if (cat_idx.containsKey(i)) {
+                            HashMap<String, Integer> temp_pointer =
+                                    _counters.get(cat_idx.get(i));
+                            if (temp_pointer.containsKey(data)) {
+                                temp_pointer.replace(data, temp_pointer.get(data) + 1);
+                            } else {
+                                temp_pointer.put(data, 1);
+                            }
+                        }
+                    }
+                }
 			}
+
+            System.out.println(_categories);
+            System.out.println(_counters);
+            System.out.println(_certs);
+        }
+    }
+
+    private static void write_out(){
+	    for (String key : _counters.keySet()) {
+	        File top_ten = new File("../output/top_10_" + key + ".txt");
+//	        try {
+//                FileWriter w_top_ten = new FileWriter(top_ten);
+//            } catch (new Exception(FileNotFoundException e)) {
+//
+//            }
         }
     }
 }
