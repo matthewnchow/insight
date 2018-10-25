@@ -60,25 +60,26 @@ public class main {
 	}
 
 	/** Process each scanner. Count the states and jobs.
-     *  Reads the first line to get the title of each column.
-     *  Then scans through each line, adding to the states and jobs HashMaps.*/
+     *  Reads the first line, gets indices of important columns.
+     *  Then scans through each line, adding to the states and jobs HashMaps
+     *  for certified applications.*/
 	private static void process(Scanner s) {
         HashMap<Integer, String> cat_idx = new HashMap<>();
         Scanner temp;
         String line;
-        int catcount = 1;
         if (s.hasNextLine()) {
             temp = new Scanner(s.nextLine());
             temp.useDelimiter(";");
             for (int i = 0; temp.hasNext(); i++) {
 				String cat_i = temp.next();
-                System.out.print(cat_i + Integer.toString(catcount) + ";");
-                catcount++;
-				if (_categories.contains(cat_i)) {cat_idx.put(i+1, cat_i);}
+				if (_categories.contains(cat_i)) {
+				    cat_idx.put(i+1, cat_i);
+				}
             }
-            System.out.println(cat_idx);
             int badlns = 0;
+            int lines = 1;
             while (s.hasNextLine()) {
+                lines++;
                 line = s.nextLine();
                 if (line.contains(_certKEY)) {
                     _certs++;
@@ -105,12 +106,13 @@ public class main {
                     }
                 }
 			}
+            System.out.println(lines);
             System.out.println(badlns);
         }
-        System.out.println(_categories);
-        System.out.println(_counters.get(_categories.get(0)));
+//        System.out.println(_categories);
+//        System.out.println(_counters.get(_categories.get(0)));
 //        System.out.println(_counters.get(_categories.get(1)));
-        System.out.println(_certs);
+//        System.out.println(_certs);
     }
 
     private static void write_out(){
