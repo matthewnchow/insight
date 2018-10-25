@@ -13,13 +13,23 @@ import java.io.FileWriter;
 public class main {
 //    private HashMap<String, Integer> _states = new HashMap<>();
 //    private HashMap<String, Integer> _jobs = new HashMap<>();
-    private String[] _categories;
-    private ArrayList<HashMap<String, Integer>> _counters;
+    private static String[] _categories;
+    private static ArrayList<HashMap<String, Integer>> _counters;
 
     /** Get the input files, run the reader, write to output.
-     * Takes arguments of the parameters we want to list top ten lists.*/
+     * Takes arguments of the parameters we want to list top ten lists.
+	 * args[0] is the name of the column with status.
+	 * args[1]..args[n] are optional names of columns with categories to
+	 * 		get top 10's for.*/
 	public static void main(String[] args) {
-		initilize(args);
+//		if (args.length == 0) {
+//			throw new Exception();
+//		}
+		_categories = args;
+		_counters = new ArrayList<>();
+		for (int i = 0; i < _categories.length - 1; i++) {
+		    _counters.add(new HashMap<>());
+        }
 		ArrayList<Scanner> inputs = read_Input();
 		for (int i = 0; i < inputs.size(); i++) {
             process(inputs.get(i));
