@@ -1,4 +1,5 @@
 import java.io.FileNotFoundException;
+import java.util.Set;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -21,9 +22,9 @@ import java.io.FileWriter;
  *      - only processes rows containing key (can be "" to process all)
  *  @author Matthew Chow  : matthewnchow@berkeley.edu*/
 public class main {
-    /** ArrayList containing the column header names to be tracked.*/
-//    private static ArrayList<String> _categories;
+    /** Nested HashMap containing parameters we care about and their counts.*/
     private static HashMap<String, HashMap<String, Integer>> _counters;
+    private static ArrayList<String> _categories;
     private static String _certKEY;
     private static int _certs;
 
@@ -40,36 +41,25 @@ public class main {
 //		}
 		_certKEY = args[0];
 		_certs = 0;
-//        _categories = new ArrayList<>();
         _counters = new HashMap<>();
-//		fill_cat_count(args);
+        _categories = new ArrayList<>();
         for (int i = 1; i < args.length; i++) {
             _counters.put(args[i], new HashMap<>());
+            _categories.add(args[i]);
         }
         System.out.println(_counters);
-//        System.out.println(_categories);
 		ArrayList<Scanner> inputs = read_Input();
 		for (int i = 0; i < inputs.size(); i++) {process(inputs.get(i));}
 		write_out();
 	}
 
-//	/** Set up the _categories and _counters before processing.*/
-//    private static void fill_cat_count(String[] args) {
-//        Scanner cat_filler;
-//        for (int i = 1; i < args.length; i++) {
-//            String str = args[i];
-//            cat_filler = new Scanner(str);
-//            cat_filler.useDelimiter("&");
-//            _categories.add(new ArrayList<>());
-//             while (cat_filler.hasNext()) {
-//                _categories.get(i - 1).add(cat_filler.next());
-//            }
-//            _counters.put(str, new HashMap<>());
-//        }
-//    }
-
     private static boolean contains_all(String keys, String container) {
-        return false;
+	    Scanner scan_key = new Scanner(keys);
+	    scan_key.useDelimiter("&");
+	    while (scan_key.hasNext()) {
+	        if (!container.contains(scan_key.next())) {return false;}
+        }
+        return true;
     }
 
 	/** Get all the names of the files in input,
@@ -97,17 +87,16 @@ public class main {
         Scanner temp;
         String line;
         if (s.hasNextLine()) {
-            temp = new Scanner(s.nextLine());
-            temp.useDelimiter(";");
-            for (int i = 0; temp.hasNext(); i++) {
-				String cat_i = temp.next();
-				for (ArrayList<String> cat_keys : _categories) {
-				    for (String cat_key : cat_keys) {
-                        if (!cat_i.contains(cat_key)) {
-                            break;
-                        }
+            line = s.nextLine();
+            for (String cat_keys : _categories)  {
+                temp = new Scanner(line);
+                temp.useDelimiter(";");
+				for (int i = 0; temp.hasNext(); i++){
+                    String cat_i = temp.next();
+                    if (contains_all(cat_keys, cat_i)) {
+                        cat_idx.put(i + 1, cat_keys);
+                        break;
                     }
-                    cat_idx.put(i + 1, cat_i);
                 }
             }
             int badlns = 0;
@@ -119,16 +108,18 @@ public class main {
                     _certs++;
                     temp = new Scanner(line);
                     temp.useDelimiter(";");
+                    String data;
                     for (int i = 0; temp.hasNext(); i++) {
                         temp.useDelimiter(";");
-                        if (temp.hasNext("(\").*")) {
-                            temp.useDelimiter("(\".*;)");
+                        if (temp.hasNext("(\".*?\")")) {
+                            temp.useDelimiter("(\";)");
                         }
-                        String data = temp.next();
+                        data = temp.next();
                         if (cat_idx.containsKey(i)) {
-                            if (!data.matches("([A-Z][A-Z])")) {
+                            if (!data.matches(" *([A-Z][A-Z])")) {
                                 badlns+=1;
-//                                System.out.println(line);
+                                System.out.println(data);
+                                System.out.println(line);
                             }
                             HashMap<String, Integer> temp_pointer =
                                     _counters.get(cat_idx.get(i));
@@ -142,11 +133,10 @@ public class main {
             System.out.println("Lines "+ Integer.toString(lines));
             System.out.println("Bad Lines " + Integer.toString(badlns));
         }
-        System.out.println(_categories);
-        System.out.println(_counters.get(_categories.get(0)));
-//        System.out.println(_counters.get(_categories.get(1)));
+        System.out.println(_counters);
         System.out.println(_certs);
     }
+
 
     private static void write_out(){
 	    for (String key : _counters.keySet()) {
