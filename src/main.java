@@ -9,39 +9,68 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 
-
+/** Program for taking a directory of input data and writing "top 10" files.
+ *  Requires that input files have format:
+ *      ;Col header1;Col header2;...Col headerN
+ *      1;element (1,1);element (1,2);...element (1,N)
+ *      .
+ *      .
+ *      .
+ *      N;element (N,1);element (N,2);...element (N,N)
+ *  Also requires consistent "Certification key"
+ *      - only processes rows containing key (can be "" to process all)
+ *  @author Matthew Chow  : matthewnchow@berkeley.edu*/
 public class main {
-//    private HashMap<String, Integer> _states = new HashMap<>();
-//    private HashMap<String, Integer> _jobs = new HashMap<>();
-    private static ArrayList<String> _categories;
+    /** ArrayList containing the column header names to be tracked.*/
+//    private static ArrayList<String> _categories;
     private static HashMap<String, HashMap<String, Integer>> _counters;
     private static String _certKEY;
     private static int _certs;
 
     /** Get the input files, run the reader, write to output.
      * Takes arguments of the parameters we want to list top ten lists.
-	 * args[0] is the name of the column with status.
+	 * args[0] is certification keyword (CERTIFIED for standard input).
 	 * args[1]..args[n] are optional names of columns with categories to
-	 * 		get top 10's for.*/
+	 * 		get top 10's for. For standard input:
+     * 	    arg[1] = LCA_CASE_WORKLOC1_STATE
+     * 	    arg[2] = */
 	public static void main(String[] args) {
 //		if (args.length == 0) {
 //			throw new Exception();
 //		}
-		_categories = new ArrayList<>();
-		_counters = new HashMap<>();
 		_certKEY = args[0];
 		_certs = 0;
-		for (int i = 1; i < args.length; i++) {
-		    String str = args[i];
-		    _categories.add(str);
-		    _counters.put(str, new HashMap<>());
+//        _categories = new ArrayList<>();
+        _counters = new HashMap<>();
+//		fill_cat_count(args);
+        for (int i = 1; i < args.length; i++) {
+            _counters.put(args[i], new HashMap<>());
         }
+        System.out.println(_counters);
+//        System.out.println(_categories);
 		ArrayList<Scanner> inputs = read_Input();
-		for (int i = 0; i < inputs.size(); i++) {
-            process(inputs.get(i));
-		}
+		for (int i = 0; i < inputs.size(); i++) {process(inputs.get(i));}
 		write_out();
 	}
+
+//	/** Set up the _categories and _counters before processing.*/
+//    private static void fill_cat_count(String[] args) {
+//        Scanner cat_filler;
+//        for (int i = 1; i < args.length; i++) {
+//            String str = args[i];
+//            cat_filler = new Scanner(str);
+//            cat_filler.useDelimiter("&");
+//            _categories.add(new ArrayList<>());
+//             while (cat_filler.hasNext()) {
+//                _categories.get(i - 1).add(cat_filler.next());
+//            }
+//            _counters.put(str, new HashMap<>());
+//        }
+//    }
+
+    private static boolean contains_all(String keys, String container) {
+        return false;
+    }
 
 	/** Get all the names of the files in input,
 	 * returns ArrayList of scanners (one for each file).*/
@@ -72,9 +101,14 @@ public class main {
             temp.useDelimiter(";");
             for (int i = 0; temp.hasNext(); i++) {
 				String cat_i = temp.next();
-				if (_categories.contains(cat_i)) {
-				    cat_idx.put(i+1, cat_i);
-				}
+				for (ArrayList<String> cat_keys : _categories) {
+				    for (String cat_key : cat_keys) {
+                        if (!cat_i.contains(cat_key)) {
+                            break;
+                        }
+                    }
+                    cat_idx.put(i + 1, cat_i);
+                }
             }
             int badlns = 0;
             int lines = 1;
@@ -94,9 +128,8 @@ public class main {
                         if (cat_idx.containsKey(i)) {
                             if (!data.matches("([A-Z][A-Z])")) {
                                 badlns+=1;
-                                System.out.println(line);
+//                                System.out.println(line);
                             }
-
                             HashMap<String, Integer> temp_pointer =
                                     _counters.get(cat_idx.get(i));
                             if (temp_pointer.containsKey(data)) {
@@ -106,13 +139,13 @@ public class main {
                     }
                 }
 			}
-            System.out.println(lines);
-            System.out.println(badlns);
+            System.out.println("Lines "+ Integer.toString(lines));
+            System.out.println("Bad Lines " + Integer.toString(badlns));
         }
-//        System.out.println(_categories);
-//        System.out.println(_counters.get(_categories.get(0)));
+        System.out.println(_categories);
+        System.out.println(_counters.get(_categories.get(0)));
 //        System.out.println(_counters.get(_categories.get(1)));
-//        System.out.println(_certs);
+        System.out.println(_certs);
     }
 
     private static void write_out(){
