@@ -50,9 +50,13 @@ public class main {
         }
         for (String s : top10s[0]) {
             System.out.println(s);
-            System.out.println(_counters.get(_categories.get(0)).get(s));
+            System.out.println(_counters.get(_categories.get(0)).get(s)/_certs);
         }
-		write_out();
+        for (String s : top10s[1]) {
+            System.out.println(s);
+            System.out.println(100*(float)_counters.get(_categories.get(1)).get(s)/_certs);
+        }
+		write_out(top10s);
 	}
 
 	/** Returns true if CONTAINER contains all tokens of keys.*/
@@ -179,14 +183,28 @@ public class main {
 	}
 
 	/** Writes the output from the top ten keys in a HashMap to a text file.*/
-    private static void write_out(){
-	    for (String key : _counters.keySet()) {
-	        File top_ten = new File("../output/top_10_" + key + ".txt");
-//	        try {
-//                FileWriter w_top_ten = new FileWriter(top_ten);
-//            } catch (new Exception(FileNotFoundException e)) {
-//
-//            }
-        }
+    private static void write_out(String[][] top10s){
+	    for (int j = 0; j < _categories.size(); j++) {
+	        String key = _categories.get(j);
+            String name;
+            if (key.contains("STATE")) {name = "states"; }
+            else {name = "occupations";}
+            File top_ten = new File("../output/top_10_" + name + ".txt");
+	        try {
+                FileWriter w_top_ten = new FileWriter(top_ten);
+                w_top_ten.write("TOP_" + name.toUpperCase()
+                        + "NUMBER_CERTIFIED_APPLICATIONS;PERCENTAGE \r\n");
+                for (int i = 0; i < top10s[j].length; i++) {
+                    w_top_ten.append(top10s[j][i] + ';'
+                        + _counters.get(key).get(top10s[j][i]) + ';');
+                    w_top_ten.append(
+                        Float.toString(100
+                        * (float)_counters.get(key).get(top10s[j][i])/_certs));
+                    w_top_ten.append(";\r\n");
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+	    }
     }
 }
