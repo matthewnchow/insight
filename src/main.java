@@ -52,7 +52,7 @@ public class main {
 	/** Returns true if CONTAINER contains all tokens of keys.*/
     private static boolean contains_all(String keys, String container) {
 	    Scanner scan_key = new Scanner(keys);
-	    scan_key.useDelimiter("&");
+	    scan_key.useDelimiter("-");
 	    while (scan_key.hasNext()) {
 	        if (!container.contains(scan_key.next())) {return false;}
         }
