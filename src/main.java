@@ -1,4 +1,4 @@
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.Set;
 import java.util.Scanner;
 import java.util.regex.Pattern;
@@ -6,9 +6,6 @@ import java.util.regex.Matcher;
 import java.util.regex.PatternSyntaxException;
 import java.util.HashMap;
 import java.util.ArrayList;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 
 /** Program for taking a directory of input data and writing "top 10" files.
  *  Requires that input files have format:
@@ -48,7 +45,7 @@ public class main {
             _categories.add(args[i]);
         }
         System.out.println(_counters);
-		ArrayList<Scanner> inputs = read_Input();
+		ArrayList<FileReader> inputs = read_Input();
 		for (int i = 0; i < inputs.size(); i++) {process(inputs.get(i));}
 		write_out();
 	}
@@ -64,13 +61,13 @@ public class main {
 
 	/** Get all the names of the files in input,
 	 * returns ArrayList of scanners (one for each file).*/
-	private static ArrayList<Scanner> read_Input() {
-		ArrayList<Scanner> to_return = new ArrayList<>();
+	private static ArrayList<FileReader> read_Input() {
+		ArrayList<FileReader> to_return = new ArrayList<>();
 		File indir = new File("../input");
 		File[] files = indir.listFiles();
 		for (int i = 0; i < files.length; i++) {
 		    try {
-                to_return.add(new Scanner(files[i]));
+                to_return.add(new FileReader(files[i]));
             } catch (FileNotFoundException e) {
 		        e.printStackTrace();
             }
@@ -82,63 +79,71 @@ public class main {
      *  Reads the first line, gets indices of important columns.
      *  Then scans through each line, adding to the states and jobs HashMaps
      *  for certified applications.*/
-	private static void process(Scanner s) {
+	private static void process(Reader r) {
         HashMap<Integer, String> cat_idx = new HashMap<>();
+        BufferedReader R = new BufferedReader(r);
         Scanner temp;
-        String line;
-        if (s.hasNextLine()) {
-            line = s.nextLine();
-            for (String cat_keys : _categories)  {
-                temp = new Scanner(line);
-                temp.useDelimiter(";");
-				for (int i = 0; temp.hasNext(); i++){
-                    String cat_i = temp.next();
-                    if (contains_all(cat_keys, cat_i)) {
-                        cat_idx.put(i + 1, cat_keys);
-                        break;
-                    }
-                }
-            }
-            int badlns = 0;
-            int lines = 1;
-            while (s.hasNextLine()) {
-                lines++;
-                line = s.nextLine();
-                if (line.contains(_certKEY)) {
-                    _certs++;
+        try {
+            String line = R.readLine();
+            if (!line.equals(null)) {
+                for (String cat_keys : _categories) {
                     temp = new Scanner(line);
                     temp.useDelimiter(";");
-                    String data;
-                    int i = 0;
-                    while (temp.hasNext()) {
-                        if (temp.hasNext("\".*?")) {
-                            temp.useDelimiter("(\";|;\")");
-                            data = temp.next();
-                            temp.useDelimiter(";");
-                            temp.next();
-                        } else {
-                            data = temp.next();
+                    for (int i = 0; temp.hasNext(); i++) {
+                        String cat_i = temp.next();
+                        if (contains_all(cat_keys, cat_i)) {
+                            cat_idx.put(i + 1, cat_keys);
+                            break;
                         }
-                        if (cat_idx.containsKey(i)) {
-                            if (!data.matches("\\s*?([A-Z][A-Z])\\s*?")) {
-                                badlns+=1;
-                            }
-                            HashMap<String, Integer> temp_pointer =
-                                    _counters.get(cat_idx.get(i));
-                            if (temp_pointer.containsKey(data)) {
-                                temp_pointer.replace(data, temp_pointer.get(data) + 1);
-                            } else {temp_pointer.put(data, 1);}
-                        }
-                        i++;
                     }
                 }
-			}
-            System.out.println("Lines "+ Integer.toString(lines));
-            System.out.println("Bad Lines " + Integer.toString(badlns));
+                System.out.println("Cat_idx");
+                System.out.println(cat_idx);
+//                int badlns = 0;
+                int lines = 1;
+                while ((line = R.readLine()) != null) {
+                    lines++;
+                    if (line.contains(_certKEY)) {
+                        _certs++;
+                        temp = new Scanner(line);
+                        temp.useDelimiter(";");
+                        String data;
+                        int i = 0;
+                        while (temp.hasNext()) {
+                            if (temp.hasNext("\".*?")) {
+                                temp.useDelimiter("(\";|;\")");
+                                data = temp.next();
+                                temp.useDelimiter(";");
+                                temp.next();
+                            } else {
+                                data = temp.next();
+                            }
+                            if (cat_idx.containsKey(i)) {
+//                                if (!data.matches("\\s*?([A-Z][A-Z])\\s*?")) {
+//                                    badlns += 1;
+//                                }
+                                HashMap<String, Integer> temp_pointer =
+                                        _counters.get(cat_idx.get(i));
+                                if (temp_pointer.containsKey(data)) {
+                                    temp_pointer.replace(data, temp_pointer.get(data) + 1);
+                                } else {
+                                    temp_pointer.put(data, 1);
+                                }
+                            }
+                            i++;
+                        }
+                    }
+                }
+                System.out.println("Lines " + Integer.toString(lines));
+//                System.out.println("Bad Lines " + Integer.toString(badlns));
+            }
+            System.out.println(_counters);
+            System.out.println("Certs " + Integer.toString(_certs));
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
-        System.out.println(_counters);
-        System.out.println("Certs "+ Integer.toString(_certs));
-    }
+	}
+
 
 
     private static void write_out(){
