@@ -200,7 +200,7 @@ public class main {
                     w_top_ten.print(
                         Float.toString(100
                         * (float)_counters.get(key).get(top10s[j][i])/_certs));
-                    w_top_ten.println(";");
+                    w_top_ten.println("%");
                 }
                 w_top_ten.close();
             } catch (IOException ex) {
