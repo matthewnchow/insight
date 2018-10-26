@@ -109,17 +109,19 @@ public class main {
                     temp = new Scanner(line);
                     temp.useDelimiter(";");
                     String data;
-                    for (int i = 0; temp.hasNext(); i++) {
-                        temp.useDelimiter(";");
-                        if (temp.hasNext("(\".*?\")")) {
-                            temp.useDelimiter("(\";)");
+                    int i = 0;
+                    while (temp.hasNext()) {
+                        if (temp.hasNext("\".*?")) {
+                            temp.useDelimiter("(\";|;\")");
+                            data = temp.next();
+                            temp.useDelimiter(";");
+                            temp.next();
+                        } else {
+                            data = temp.next();
                         }
-                        data = temp.next();
                         if (cat_idx.containsKey(i)) {
-                            if (!data.matches(" *([A-Z][A-Z])")) {
+                            if (!data.matches("\\s*?([A-Z][A-Z])\\s*?")) {
                                 badlns+=1;
-                                System.out.println(data);
-                                System.out.println(line);
                             }
                             HashMap<String, Integer> temp_pointer =
                                     _counters.get(cat_idx.get(i));
@@ -127,6 +129,7 @@ public class main {
                                 temp_pointer.replace(data, temp_pointer.get(data) + 1);
                             } else {temp_pointer.put(data, 1);}
                         }
+                        i++;
                     }
                 }
 			}
@@ -134,7 +137,7 @@ public class main {
             System.out.println("Bad Lines " + Integer.toString(badlns));
         }
         System.out.println(_counters);
-        System.out.println(_certs);
+        System.out.println("Certs "+ Integer.toString(_certs));
     }
 
 
