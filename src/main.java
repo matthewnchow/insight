@@ -40,21 +40,11 @@ public class main {
             _counters.put(args[i], new HashMap<>());
             _categories.add(args[i]);
         }
-        System.out.println(_counters);
 		ArrayList<FileReader> inputs = read_Input();
 		for (int i = 0; i < inputs.size(); i++) {process(inputs.get(i));}
 		String[][] top10s = new String[_counters.size()][10];
-        System.out.println(_counters.get(_categories.get(0)));
 		for (int i = 0; i < _counters.size(); i++) {
             top10s[i] = top_ten(_counters.get(_categories.get(i)));
-        }
-        for (String s : top10s[0]) {
-            System.out.println(s);
-            System.out.println(_counters.get(_categories.get(0)).get(s)/_certs);
-        }
-        for (String s : top10s[1]) {
-            System.out.println(s);
-            System.out.println(100*(float)_counters.get(_categories.get(1)).get(s)/_certs);
         }
 		write_out(top10s);
 	}
@@ -193,12 +183,11 @@ public class main {
 	        try {
                 PrintStream w_top_ten = new PrintStream(top_ten);
                 w_top_ten.println("TOP_" + name.toUpperCase()
-                        + "NUMBER_CERTIFIED_APPLICATIONS;PERCENTAGE");
+                        + ";NUMBER_CERTIFIED_APPLICATIONS;PERCENTAGE");
                 for (int i = 0; i < top10s[j].length; i++) {
                     w_top_ten.print(top10s[j][i] + ';'
                         + _counters.get(key).get(top10s[j][i]) + ';');
-                    w_top_ten.print(
-                        Float.toString(100
+                    w_top_ten.print(String.format("%.1f", 100
                         * (float)_counters.get(key).get(top10s[j][i])/_certs));
                     w_top_ten.println("%");
                 }
