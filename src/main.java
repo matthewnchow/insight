@@ -191,17 +191,18 @@ public class main {
             else {name = "occupations";}
             File top_ten = new File("../output/top_10_" + name + ".txt");
 	        try {
-                FileWriter w_top_ten = new FileWriter(top_ten);
-                w_top_ten.write("TOP_" + name.toUpperCase()
-                        + "NUMBER_CERTIFIED_APPLICATIONS;PERCENTAGE \r\n");
+                PrintStream w_top_ten = new PrintStream(top_ten);
+                w_top_ten.println("TOP_" + name.toUpperCase()
+                        + "NUMBER_CERTIFIED_APPLICATIONS;PERCENTAGE");
                 for (int i = 0; i < top10s[j].length; i++) {
-                    w_top_ten.append(top10s[j][i] + ';'
+                    w_top_ten.print(top10s[j][i] + ';'
                         + _counters.get(key).get(top10s[j][i]) + ';');
-                    w_top_ten.append(
+                    w_top_ten.print(
                         Float.toString(100
                         * (float)_counters.get(key).get(top10s[j][i])/_certs));
-                    w_top_ten.append(";\r\n");
+                    w_top_ten.println(";");
                 }
+                w_top_ten.close();
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
