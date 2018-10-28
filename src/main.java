@@ -125,7 +125,8 @@ public class main {
         Scanner temp;
         try {
             String line = R.readLine();
-            if (!line.equals(null)) {
+            if (line != null) {
+                //Get col indices
                 for (String cat_keys : _categories) {
                     temp = new Scanner(line);
                     temp.useDelimiter(";");
