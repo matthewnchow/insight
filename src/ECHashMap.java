@@ -12,7 +12,8 @@ class ECHashMap {
     private static final int MAXLOAD = 3;
 
     /** Class for putting in the head of Linked List objects.
-     * Contains string (key) and int (value).*/
+     * Contains string (key) and int (value).
+     * Can only increase value.*/
     class Head {
         private String _str;
         private int _count;
@@ -21,9 +22,9 @@ class ECHashMap {
             _count = c;
         }
 
-        void addone() {_count += 1; }
+        private void addone() {_count += 1;}
 
-        public int count() {return _count;}
+        private int count() {return _count;}
 
         @Override
         public boolean equals(Object o) {
@@ -103,14 +104,14 @@ class ECHashMap {
         return (s.hashCode() & 0x7fffffff) % _buckets.length;
     }
 
-    public void put(String s) {
+    void put(String s) {
         if (!_buckets[absHash(s)].contains(s)) {_size += 1;}
         _buckets[absHash(s)].add(s);
         if (load() > MAXLOAD) {resize();}
     }
 
     /** Requires that head _str is unique.*/
-    public void put(Head h) {
+    void put(Head h) {
         if (!_buckets[absHash(h._str)].contains(h._str)) {
             _size += 1;
             _buckets[absHash(h._str)].add(h);
@@ -118,16 +119,16 @@ class ECHashMap {
         if (load() > MAXLOAD) {resize();}
     }
 
-    public int get(String s) {
+    int get(String s) {
         return _buckets[absHash(s)].get(s);
     }
 
-    public boolean contains(String s) {
+    boolean contains(String s) {
         return _buckets[absHash(s)].contains(s);
     }
 
     /** Returns load factor: Number of items/number of buckets.*/
-    private float load() {
+    float load() {
         return (float)_size/_buckets.length;
     }
 
