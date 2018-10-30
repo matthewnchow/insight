@@ -41,15 +41,4 @@ public class myUts {
         vals[0] = val;
         keys[0] = key;
     }
-
-    /** Returns true if CONTAINER contains all tokens of keys.*/
-    public static boolean contains_all(String keys, String container) {
-        Scanner scan_key = new Scanner(keys);
-        scan_key.useDelimiter("-");
-        while (scan_key.hasNext()) {
-            if (!container.contains(scan_key.next())) {return false;}
-        }
-        return true;
-    }
-
 }

@@ -45,6 +45,9 @@ public class main {
             top10s[i] = top_ten(_counters[i]);
         }
 		write_out(top10s);
+//        System.out.println("Done");
+//        System.out.print("Certified lines: " );
+//        System.out.print(_certs);
 	}
 
 	/** Get all the names of the files in input,
@@ -63,6 +66,16 @@ public class main {
 		return to_return;
 	}
 
+    /** Returns true if CONTAINER contains all tokens of keys.*/
+    public static boolean contains_all(String keys, String container) {
+        Scanner scan_key = new Scanner(keys);
+        scan_key.useDelimiter("-");
+        while (scan_key.hasNext()) {
+            if (!container.contains(scan_key.next())) {return false;}
+        }
+        return true;
+    }
+
 	/** Process each scanner. Count the states and jobs.
      *  Reads the first line, gets indices of important columns.
      *  Then scans through each line, adding to the states and jobs HashMaps
@@ -78,7 +91,7 @@ public class main {
                     temp = new Scanner(line).useDelimiter(";");
                     for (int i = 0; temp.hasNext(); i++) {
                         String cat_i = temp.next();
-                        if (myUts.contains_all(_categories[j], cat_i)) {
+                        if (contains_all(_categories[j], cat_i)) {
                             indices[j] = i + 1;
                             break;
                         }
