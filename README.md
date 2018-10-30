@@ -35,7 +35,16 @@ instead or as well, but is currently set only to take the specified format.
 			-ECHashMap.java  (HashMap class with external chaining using linked list)
 			-Head.java   (Used for head of linked list, has String and int)
 			-myUts.java  (Utility class)
-		-testing
+			-Chain.java (Linked list class for external chaining)
+		-insight_testsuite
+			-temp
+			-tests
+				-test1
+					-input(given)
+					-output(given)
+				-test2
+					-myinput (Lines that originally tripped up my code, used in testing)
+					-myoutput
 			
 		
 		
