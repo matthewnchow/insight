@@ -1,5 +1,3 @@
-package insightSolution;
-
 /** Class containing various string and HashMap utilities.*/
 public class myUts {
 

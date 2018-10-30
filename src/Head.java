@@ -1,5 +1,3 @@
-package insightSolution;
-
 /** Class for putting in the head of Linked List objects.
  * Contains string (key) and int (value).
  * Can only increase value.*/

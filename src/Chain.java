@@ -1,5 +1,3 @@
-package insightSolution;
-
 /** Linked List class to store buckets of data.
  * Always has last chain with head = null, tail = null)*/
 class Chain {

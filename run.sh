@@ -3,11 +3,8 @@
 # Java class main takes arguments ("CERTKEY, CATEGORY1_KEYWORDS, CATEGORY2_KEYWORDS, ... CATEGORYN_KEYWORDS")
 # written by Matthew Chow
 
-cd src/insightSolution
+cd src
+make clean
+make
 
-javac Head.java
-javac ECHashMap.java
-javac myUts.java
-javac main.java
-
-java insightSolution/main CERTIFIED WORK-STATE JOB-TITLE
+java main CERTIFIED WORK-STATE JOB-TITLE
