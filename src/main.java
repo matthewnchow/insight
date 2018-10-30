@@ -45,10 +45,10 @@ public class main {
             top10s[i] = top_ten(_counters[i]);
         }
 		write_out(top10s);
-        System.out.println("Done running");
-        System.out.print("Certified lines: " );
-        System.out.println(_certs);
-        System.out.println("Please check input folder for results");
+//        System.out.println("Done running");
+//        System.out.print("Certified lines: " );
+//        System.out.println(_certs);
+//        System.out.println("Please check input folder for results");
 	}
 
 	/** Get all the names of the files in input,
@@ -83,6 +83,9 @@ public class main {
      *  for certified applications.*/
 	private static void process(Reader r) {
 	    int[] indices = new int[_categories.length];
+	    int[] starts = new int[_categories.length];
+	    int[] ends = new int[_categories.length];
+	    boolean startend = false;
         BufferedReader R = new BufferedReader(r);
         Scanner temp;
         try {
@@ -93,7 +96,7 @@ public class main {
                     for (int i = 0; temp.hasNext(); i++) {
                         String cat_i = temp.next();
                         if (contains_all(_categories[j], cat_i)) {
-                            indices[j] = i + 1;
+                            indices[j] = i;
                             break;
                         }
                     }
@@ -101,24 +104,31 @@ public class main {
                 while ((line = R.readLine()) != null) {
                     if (line.contains(_certKEY)) {
                         _certs++;
-                        temp = new Scanner(line).useDelimiter(";");
-                        String data;
-                        for (int i = 0; temp.hasNext(); i++) {
-                            if (temp.hasNext("\".*?")) {
-                                temp.useDelimiter("(\";|;\")");
-                                data = temp.next();
-                                temp.useDelimiter(";");
-                                temp.next();
-                            } else {data = temp.next();}
-                            if (myUts.indexof(indices, i) != -1) {
-                                _counters[myUts.indexof(indices, i)].put(data);
+                        int numquotes = 0;
+                        int numsemicolons = 0;
+                        startend = false;
+                        for (int j = 0; j < line.length(); j++) {
+                            if (line.charAt(j) == ';') {
+                                if (numquotes % 2 == 0) {
+                                    if (startend) {
+                                        ends[myUts.indexof(indices, numsemicolons - 1)] = j;
+                                        startend = false;
+                                    } else if (myUts.indexof(indices, numsemicolons) != -1) {
+                                        starts[myUts.indexof(indices, numsemicolons)] = j + 1;
+                                        startend = true;
+                                    }
+                                    numsemicolons += 1;
+                                }
+                            } else if (line.charAt(j) == '"') {
+                                numquotes++;
                             }
+                        }
+                        for (int k = 0; k < indices.length; k++) {
+                            _counters[k].put(line.substring(starts[k], ends[k]));
                         }
                     }
                 }
             }
-            R.close();
-            r.close();
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -149,19 +159,14 @@ public class main {
                 w_top_ten.println("TOP_" + name.toUpperCase()
                         + ";NUMBER_CERTIFIED_APPLICATIONS;PERCENTAGE");
                 for (int i = 0; i < top10s[j].length; i++) {
-                    System.out.print("Length of counters: ");
-                    System.out.println(_counters.length);
-                    System.out.println(_counters[j]);
-                    System.out.print("Get top ten key: ");
-                    System.out.print(top10s[j][i] + " ");
-                    System.out.println(_counters[j].get(top10s[j][i]));
-                    w_top_ten.print(top10s[j][i] + ';'
-                        + _counters[j].get(top10s[j][i]) + ';');
-                    w_top_ten.print(String.format("%.1f", 100
-                        * (float)_counters[j].get(top10s[j][i])/_certs));
-                    w_top_ten.println("%");
+                    if (top10s[j][i] != null) {
+                        w_top_ten.print(top10s[j][i] + ';'
+                                + _counters[j].get(top10s[j][i]) + ';');
+                        w_top_ten.print(String.format("%.1f", 100
+                                * (float) _counters[j].get(top10s[j][i]) / _certs));
+                        w_top_ten.print("%" + "\n");
+                    }
                 }
-                w_top_ten.print("\n");
                 w_top_ten.close();
             } catch (IOException ex) {
                 ex.printStackTrace();
