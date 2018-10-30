@@ -47,64 +47,6 @@ public class main {
 		write_out(top10s);
 	}
 
-	/** Returns true if CONTAINER contains all tokens of keys.*/
-    private static boolean contains_all(String keys, String container) {
-	    Scanner scan_key = new Scanner(keys);
-	    scan_key.useDelimiter("-");
-	    while (scan_key.hasNext()) {
-	        if (!container.contains(scan_key.next())) {return false;}
-        }
-        return true;
-    }
-
-    /** Returns the keys with the 10 highest values in a HashMap.*/
-    private static String[] top_ten(ECHashMap h) {
-	    String[] to_return = new String[10];
-	    int[] return_vals = new int[10];
-	    for (String s: h.keys()) {
-	        if (h.get(s) > min(return_vals)) {
-                sorted_insert(h.get(s), s, return_vals, to_return);
-            }
-        }
-	    return to_return;
-    }
-
-    /** Inserts key and value into proper position in array,
-     *  such that the array is ordered descending.
-     *  Requires val > last element of val. */
-    private static void sorted_insert(int val, String key, int[] vals, String[] keys) {
-        for (int i = vals.length - 1; i >= 1; i--) {
-            if (vals[i - 1] == 0 || val > vals[i - 1]
-                    || (val == vals[i - 1] && key.compareTo(keys[i - 1]) < 0)) {
-                vals[i] = vals[i-1];
-                keys[i] = keys[i-1];
-            } else {
-                vals[i] = val;
-                keys[i] = key;
-                return;
-            }
-        }
-        vals[0] = val;
-        keys[0] = key;
-    }
-
-    /** Returns the minimum value of an array.*/
-    private static int min(int[] a) {
-        int min = 0;
-	    for (int i = 0; i < a.length; i++) {
-            if (a[i] < min) {min = a[i];}
-        }
-        return min;
-    }
-
-    /** Returns first index of value in array. -1 if does not contain. */
-    private static int indexof(int[] a, int b) {
-        for (int i = 0; i < a.length; i++) {
-            if (a[i] == b) {return i;}
-        }
-        return -1;
-    }
-
 	/** Get all the names of the files in input,
 	 * returns ArrayList of scanners (one for each file).*/
 	private static FileReader[] read_Input() {
@@ -136,7 +78,7 @@ public class main {
                     temp = new Scanner(line).useDelimiter(";");
                     for (int i = 0; temp.hasNext(); i++) {
                         String cat_i = temp.next();
-                        if (contains_all(_categories[j], cat_i)) {
+                        if (myUts.contains_all(_categories[j], cat_i)) {
                             indices[j] = i + 1;
                             break;
                         }
@@ -154,8 +96,8 @@ public class main {
                                 temp.useDelimiter(";");
                                 temp.next();
                             } else {data = temp.next();}
-                            if (indexof(indices, i) != -1) {
-                                _counters[indexof(indices, i)].put(data);
+                            if (myUts.indexof(indices, i) != -1) {
+                                _counters[myUts.indexof(indices, i)].put(data);
                             }
                         }
                     }
@@ -168,7 +110,19 @@ public class main {
         }
 	}
 
-	/** Writes the output from the top ten keys in a HashMap to a text file.*/
+    /** Returns the keys with the 10 highest values in a HashMap.*/
+    private static String[] top_ten(ECHashMap h) {
+        String[] to_return = new String[10];
+        int[] return_vals = new int[10];
+        for (String s: h.keys()) {
+            if (h.get(s) > myUts.min(return_vals)) {
+                myUts.sorted_insert(h.get(s), s, return_vals, to_return);
+            }
+        }
+        return to_return;
+    }
+
+    /** Writes the output from the top ten keys in a HashMap to a text file.*/
     private static void write_out(String[][] top10s){
 	    for (int j = 0; j < _categories.length; j++) {
 	        String key = _categories[j];
@@ -182,9 +136,9 @@ public class main {
                         + ";NUMBER_CERTIFIED_APPLICATIONS;PERCENTAGE");
                 for (int i = 0; i < top10s[j].length; i++) {
                     w_top_ten.print(top10s[j][i] + ';'
-                        + _counters[i].get(top10s[j][i]) + ';');
+                        + _counters[j].get(top10s[j][i]) + ';');
                     w_top_ten.print(String.format("%.1f", 100
-                        * (float)_counters[i].get(top10s[j][i])/_certs));
+                        * (float)_counters[j].get(top10s[j][i])/_certs));
                     w_top_ten.println("%");
                 }
                 w_top_ten.print("\n");

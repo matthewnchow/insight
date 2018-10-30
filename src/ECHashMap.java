@@ -91,6 +91,10 @@ class ECHashMap {
     }
 
     void put(String s) {
+        if (s == null) {
+            put("NULL");
+            return;
+        }
         if (!_buckets[absHash(s)].contains(s)) {_size += 1;}
         _buckets[absHash(s)].add(s);
         if (load() > MAXLOAD) {resize();}
