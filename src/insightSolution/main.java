@@ -55,7 +55,7 @@ public class main {
 	/** Get all the names of the files in input,
 	 * returns ArrayList of scanners (one for each file).*/
 	private static FileReader[] read_Input() {
-		File indir = new File("../input");
+		File indir = new File("../../input");
 		File[] files = indir.listFiles();
         FileReader[] to_return = new FileReader[files.length];
         for (int i = 0; i < files.length; i++) {
@@ -144,7 +144,7 @@ public class main {
             String name;
             if (key.contains("STATE")) {name = "states"; }
             else {name = "occupations";}
-            File top_ten = new File("../output/top_10_" + name + ".txt");
+            File top_ten = new File("../../output/top_10_" + name + ".txt");
 	        try {
                 PrintStream w_top_ten = new PrintStream(top_ten);
                 w_top_ten.println("TOP_" + name.toUpperCase()

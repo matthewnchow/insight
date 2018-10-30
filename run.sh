@@ -3,9 +3,11 @@
 # Java class main takes arguments ("CERTKEY, CATEGORY1_KEYWORDS, CATEGORY2_KEYWORDS, ... CATEGORYN_KEYWORDS")
 # written by Matthew Chow
 
-THE_CLASSPATH=
-PROGRAM_NAME=Main.java
-cd src
-javac -classpath ".:${THE_CLASSPATH}" $PROGRAM_NAME
+cd src/insightSolution
 
-java main CERTIFIED WORK-STATE JOB-TITLE
+javac Head.java
+javac ECHashMap.java
+javac myUts.java
+javac main.java
+
+java insightSolution/main CERTIFIED WORK-STATE JOB-TITLE
