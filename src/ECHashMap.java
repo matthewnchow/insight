@@ -11,26 +11,6 @@ class ECHashMap {
     /** Max tolerable loading factor. (Number of key-value pairs/number of buckets)*/
     private static final int MAXLOAD = 3;
 
-    /** Class for putting in the head of Linked List objects.
-     * Contains string (key) and int (value).
-     * Can only increase value.*/
-    class Head {
-        private String _str;
-        private int _count;
-        Head(String s, int c) {
-            _str = s;
-            _count = c;
-        }
-
-        private void addone() {_count += 1;}
-
-        private int count() {return _count;}
-
-        @Override
-        public boolean equals(Object o) {
-            return _str.compareTo((String) o) == 0;
-        }
-    }
 
     /** Linked List class to store buckets of data.
      * Always has last chain with head = null, tail = null)*/
@@ -92,6 +72,12 @@ class ECHashMap {
             _tail = _tail._tail;
             return temp;
         }
+
+        /** Removes head of chain if there is a head to remove.*/
+        public String headStrPeek() {
+            if (size() < 1) {return null;}
+            return _head.str();
+        }
     }
 
     ECHashMap() {
@@ -112,9 +98,9 @@ class ECHashMap {
 
     /** Requires that head _str is unique.*/
     void put(Head h) {
-        if (!_buckets[absHash(h._str)].contains(h._str)) {
+        if (!_buckets[absHash(h.str())].contains(h.str())) {
             _size += 1;
-            _buckets[absHash(h._str)].add(h);
+            _buckets[absHash(h.str())].add(h);
         }
         if (load() > MAXLOAD) {resize();}
     }
@@ -155,5 +141,19 @@ class ECHashMap {
         for (int i = 0; i < temp.length; i++) {
             put(temp[i]);
         }
+    }
+
+    /** Returns array of all string keys in HashMap.*/
+    String[] keys() {
+        String[] result = new String[_size];
+        for (int i = 0; i < _size;) {
+            for (Chain bucket : _buckets) {
+                while (bucket.size() > 0) {
+                    result[i] = bucket.headStrPeek();
+                    i++;
+                }
+            }
+        }
+        return result;
     }
 }

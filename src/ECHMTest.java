@@ -17,6 +17,11 @@ class ECHMTest {
         testMap.put("A");
         testMap.put("B");
         if (testMap.get("A") != 2 && testMap.get("B") != 1) {return false;}
+        String str1 = Character.toString('c');
+        String str2 = "c";
+        testMap.put(str1);
+        testMap.put(str2);
+        if (testMap.get(str1) != 2) {return false;}
         return true;
     }
 

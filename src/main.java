@@ -1,7 +1,5 @@
 import java.io.*;
 import java.util.Scanner;
-import java.util.HashMap;
-import java.util.ArrayList;
 
 /** Program for taking a directory of input data and writing "top 10" files.
  *  Requires that input files have format:
@@ -15,12 +13,14 @@ import java.util.ArrayList;
  *      - only processes rows containing key (can be "" to process all)
  *  @author Matthew Chow  : matthewnchow@berkeley.edu*/
 public class main {
-    /** Nested HashMap containing parameters we care about and their counts.*/
-    private static HashMap<String, HashMap<String, Integer>> _counters;
-    private static ArrayList<String> _categories;
+    /** Certification key, can be null for automatic certification.*/
     private static String _certKEY;
+    /** Count of certified entries.*/
     private static int _certs;
-//    private static ECHashMap[] _counters;
+    /** HashMap (custom: String key, int value) containing the data we track.*/
+    private static ECHashMap[] _counters;
+    /** Array of keywords that specify which columns are relevant in each file.*/
+    private static String[] _categories;
 
     /** Get the input files, run the reader, write to output.
      * Takes arguments of the parameters we want to list top ten lists.
@@ -32,17 +32,17 @@ public class main {
 	public static void main(String[] args) {
 		_certKEY = args[0];
 		_certs = 0;
-        _counters = new HashMap<>();
-        _categories = new ArrayList<>();
+        _counters = new ECHashMap[args.length - 1];
+        _categories = new String[args.length - 1];
         for (int i = 1; i < args.length; i++) {
-            _counters.put(args[i], new HashMap<>());
-            _categories.add(args[i]);
+            _counters[i] =  new ECHashMap();
+            _categories[i] = args[i];
         }
-		ArrayList<FileReader> inputs = read_Input();
-		for (int i = 0; i < inputs.size(); i++) {process(inputs.get(i));}
-		String[][] top10s = new String[_counters.size()][10];
-		for (int i = 0; i < _counters.size(); i++) {
-            top10s[i] = top_ten(_counters.get(_categories.get(i)));
+		FileReader[] inputs = read_Input();
+		for (int i = 0; i < inputs.length; i++) {process(inputs[i]);}
+		String[][] top10s = new String[_counters.length][10];
+		for (int i = 0; i < _counters.length; i++) {
+            top10s[i] = top_ten(_counters[i]);
         }
 		write_out(top10s);
 	}
@@ -58,10 +58,10 @@ public class main {
     }
 
     /** Returns the keys with the 10 highest values in a HashMap.*/
-    private static String[] top_ten(HashMap<String, Integer> h) {
+    private static String[] top_ten(ECHashMap h) {
 	    String[] to_return = new String[10];
 	    int[] return_vals = new int[10];
-	    for (String s: h.keySet()) {
+	    for (String s: h.keys()) {
 	        if (h.get(s) > min(return_vals)) {
                 sorted_insert(h.get(s), s, return_vals, to_return);
             }
@@ -97,15 +97,23 @@ public class main {
         return min;
     }
 
+    /** Returns first index of value in array. -1 if does not contain. */
+    private static int indexof(int[] a, int b) {
+        for (int i = 0; i < a.length; i++) {
+            if (a[i] == b) {return i;}
+        }
+        return -1;
+    }
+
 	/** Get all the names of the files in input,
 	 * returns ArrayList of scanners (one for each file).*/
-	private static ArrayList<FileReader> read_Input() {
-		ArrayList<FileReader> to_return = new ArrayList<>();
+	private static FileReader[] read_Input() {
 		File indir = new File("../input");
 		File[] files = indir.listFiles();
-		for (int i = 0; i < files.length; i++) {
+        FileReader[] to_return = new FileReader[files.length];
+        for (int i = 0; i < files.length; i++) {
 		    try {
-                to_return.add(new FileReader(files[i]));
+                to_return[i] = new FileReader(files[i]);
             } catch (FileNotFoundException e) {
 		        e.printStackTrace();
             }
@@ -118,20 +126,18 @@ public class main {
      *  Then scans through each line, adding to the states and jobs HashMaps
      *  for certified applications.*/
 	private static void process(Reader r) {
-        HashMap<Integer, String> cat_idx = new HashMap<>();
+	    int[] indices = new int[_categories.length];
         BufferedReader R = new BufferedReader(r);
         Scanner temp;
         try {
             String line = R.readLine();
             if (line != null) {
-                //Get col indices
-                for (String cat_keys : _categories) {
-                    temp = new Scanner(line);
-                    temp.useDelimiter(";");
+                for (int j = 0; j < _categories.length; j++) { //Get col indices
+                    temp = new Scanner(line).useDelimiter(";");
                     for (int i = 0; temp.hasNext(); i++) {
                         String cat_i = temp.next();
-                        if (contains_all(cat_keys, cat_i)) {
-                            cat_idx.put(i + 1, cat_keys);
+                        if (contains_all(_categories[j], cat_i)) {
+                            indices[j] = i + 1;
                             break;
                         }
                     }
@@ -139,8 +145,7 @@ public class main {
                 while ((line = R.readLine()) != null) {
                     if (line.contains(_certKEY)) {
                         _certs++;
-                        temp = new Scanner(line);
-                        temp.useDelimiter(";");
+                        temp = new Scanner(line).useDelimiter(";");
                         String data;
                         for (int i = 0; temp.hasNext(); i++) {
                             if (temp.hasNext("\".*?")) {
@@ -148,17 +153,9 @@ public class main {
                                 data = temp.next();
                                 temp.useDelimiter(";");
                                 temp.next();
-                            } else {
-                                data = temp.next();
-                            }
-                            if (cat_idx.containsKey(i)) {
-                                HashMap<String, Integer> temp_pointer =
-                                        _counters.get(cat_idx.get(i));
-                                if (temp_pointer.containsKey(data)) {
-                                    temp_pointer.replace(data, temp_pointer.get(data) + 1);
-                                } else {
-                                    temp_pointer.put(data, 1);
-                                }
+                            } else {data = temp.next();}
+                            if (indexof(indices, i) != -1) {
+                                _counters[indices[i]].put(data);
                             }
                         }
                     }
@@ -173,8 +170,8 @@ public class main {
 
 	/** Writes the output from the top ten keys in a HashMap to a text file.*/
     private static void write_out(String[][] top10s){
-	    for (int j = 0; j < _categories.size(); j++) {
-	        String key = _categories.get(j);
+	    for (int j = 0; j < _categories.length; j++) {
+	        String key = _categories[j];
             String name;
             if (key.contains("STATE")) {name = "states"; }
             else {name = "occupations";}
@@ -185,9 +182,9 @@ public class main {
                         + ";NUMBER_CERTIFIED_APPLICATIONS;PERCENTAGE");
                 for (int i = 0; i < top10s[j].length; i++) {
                     w_top_ten.print(top10s[j][i] + ';'
-                        + _counters.get(key).get(top10s[j][i]) + ';');
+                        + _counters[i].get(top10s[j][i]) + ';');
                     w_top_ten.print(String.format("%.1f", 100
-                        * (float)_counters.get(key).get(top10s[j][i])/_certs));
+                        * (float)_counters[i].get(top10s[j][i])/_certs));
                     w_top_ten.println("%");
                 }
                 w_top_ten.print("\n");
