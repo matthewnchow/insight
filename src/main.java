@@ -23,15 +23,12 @@ public class main {
 
     /** Get the input files, run the reader, write to output.
      * Takes arguments of the parameters we want to list top ten lists.
-	 * args[0] is certification keyword (CERTIFIED for standard input).
+	 * args[0] is required certification keyword (CERTIFIED for standard input).
 	 * args[1]..args[n] are optional names of columns with categories to
 	 * 		get top 10's for. For standard input:
-     * 	    arg[1] = LCA_CASE_WORKLOC1_STATE
-     * 	    arg[2] = */
+     * 	    arg[1] = WORK-STATE
+     * 	    arg[2] = JOB-TITLE */
 	public static void main(String[] args) {
-//		if (args.length == 0) {
-//			throw new Exception();
-//		}
 		_certKEY = args[0];
 		_certs = 0;
         _counters = new HashMap<>();
@@ -192,6 +189,7 @@ public class main {
                         * (float)_counters.get(key).get(top10s[j][i])/_certs));
                     w_top_ten.println("%");
                 }
+                w_top_ten.print("\n");
                 w_top_ten.close();
             } catch (IOException ex) {
                 ex.printStackTrace();
