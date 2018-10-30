@@ -127,6 +127,9 @@ class ECHashMap {
         return _buckets[absHash(s)].contains(s);
     }
 
+    /** Returns the number of unique strings in hashmap.*/
+    int size() {return _size;}
+
     /** Returns load factor: Number of items/number of buckets.*/
     float load() {
         return (float)_size/_buckets.length;
