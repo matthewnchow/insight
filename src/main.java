@@ -108,7 +108,7 @@ public class main {
                         int numsemicolons = 0;
                         startend = false;
                         for (int j = 0; j < line.length(); j++) {
-                            if (line.charAt(j) == ';') {
+                            if (line.charAt(j) == ';' || j == line.length() - 1) {
                                 if (numquotes % 2 == 0) {
                                     if (startend) {
                                         ends[myUts.indexof(indices, numsemicolons - 1)] = j;
