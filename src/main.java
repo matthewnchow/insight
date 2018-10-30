@@ -20,6 +20,7 @@ public class main {
     private static ArrayList<String> _categories;
     private static String _certKEY;
     private static int _certs;
+//    private static ECHashMap[] _counters;
 
     /** Get the input files, run the reader, write to output.
      * Takes arguments of the parameters we want to list top ten lists.

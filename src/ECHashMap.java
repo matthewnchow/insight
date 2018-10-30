@@ -53,6 +53,13 @@ class ECHashMap {
             }
         }
 
+        /** Add element to chain. Requires that h is unique
+         * (i.e. no two chains with same string key). */
+        public void add(Head h) {
+            _tail = new Chain(_head, _tail);
+            _head = h;
+        }
+
         /** Get length of chain. */
         public int size() {
             if (_head == null) {return 0;}
@@ -72,6 +79,9 @@ class ECHashMap {
             else if (_head.equals(s)) {return _head;}
             else {return _tail.headat(s);}
         }
+
+        /** Returns count associated with key.*/
+        public int get(String key) {return headat(key).count();}
 
         /** Removes head of chain if there is a head to remove.*/
         public Head headPop() {
@@ -96,6 +106,15 @@ class ECHashMap {
     public void put(String s) {
         if (!_buckets[absHash(s)].contains(s)) {_size += 1;}
         _buckets[absHash(s)].add(s);
+        if (load() > MAXLOAD) {resize();}
+    }
+
+    /** Requires that head _str is unique.*/
+    public void put(Head h) {
+        if (!_buckets[absHash(h._str)].contains(h._str)) {
+            _size += 1;
+            _buckets[absHash(h._str)].add(h);
+        }
         if (load() > MAXLOAD) {resize();}
     }
 
