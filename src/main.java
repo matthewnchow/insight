@@ -45,9 +45,10 @@ public class main {
             top10s[i] = top_ten(_counters[i]);
         }
 		write_out(top10s);
-//        System.out.println("Done");
-//        System.out.print("Certified lines: " );
-//        System.out.print(_certs);
+        System.out.println("Done running");
+        System.out.print("Certified lines: " );
+        System.out.println(_certs);
+        System.out.println("Please check input folder for results");
 	}
 
 	/** Get all the names of the files in input,
