@@ -6,7 +6,8 @@ class ECHMTest {
         System.out.println(testPutGet());
         System.out.print("Test Load passes:  ");
         System.out.println(testLoad());
-
+        System.out.print("Test keys passes:  ");
+        System.out.println(testKeys());
     }
 
     public static boolean testPutGet() {
@@ -35,5 +36,21 @@ class ECHMTest {
         testMap.put("0");
         if (testMap.size() != 100000) {return false;}
         return true;
+    }
+
+    public static boolean testKeys() {
+        ECHashMap testMap = new ECHashMap();
+        String[] keys = {"Apple", "Oranges", "Banana", "Pineapple", "84603"};
+        for (String key : keys) {testMap.put(key);}
+        System.out.println(toSTR(testMap.keys()));
+        return true;
+    }
+
+    private static String toSTR(String[] a) {
+        String result = "";
+        for (int i = 0; i < a.length; i++) {
+            result += a[i] + " ";
+        }
+        return result;
     }
 }

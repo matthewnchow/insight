@@ -35,8 +35,8 @@ public class main {
         _counters = new ECHashMap[args.length - 1];
         _categories = new String[args.length - 1];
         for (int i = 1; i < args.length; i++) {
-            _counters[i] =  new ECHashMap();
-            _categories[i] = args[i];
+            _counters[i - 1] =  new ECHashMap();
+            _categories[i - 1] = args[i];
         }
 		FileReader[] inputs = read_Input();
 		for (int i = 0; i < inputs.length; i++) {process(inputs[i]);}
@@ -155,7 +155,7 @@ public class main {
                                 temp.next();
                             } else {data = temp.next();}
                             if (indexof(indices, i) != -1) {
-                                _counters[indices[i]].put(data);
+                                _counters[indexof(indices, i)].put(data);
                             }
                         }
                     }

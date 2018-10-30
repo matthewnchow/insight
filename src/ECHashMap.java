@@ -73,7 +73,7 @@ class ECHashMap {
             return temp;
         }
 
-        /** Removes head of chain if there is a head to remove.*/
+        /** Returns string of head of chain without removing.*/
         public String headStrPeek() {
             if (size() < 1) {return null;}
             return _head.str();
@@ -148,8 +148,10 @@ class ECHashMap {
         String[] result = new String[_size];
         for (int i = 0; i < _size;) {
             for (Chain bucket : _buckets) {
-                while (bucket.size() > 0) {
-                    result[i] = bucket.headStrPeek();
+                Chain tempChain = bucket;
+                while (tempChain.size() > 0) {
+                    result[i] = tempChain.headStrPeek();
+                    tempChain = tempChain._tail;
                     i++;
                 }
             }
