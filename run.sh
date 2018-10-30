@@ -7,4 +7,4 @@ cd src
 make clean
 make
 
-java main CERTIFIED WORK-STATE JOB-TITLE
+java main CERTIFIED WORK-STATE SOC-NAME
