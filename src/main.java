@@ -149,6 +149,12 @@ public class main {
                 w_top_ten.println("TOP_" + name.toUpperCase()
                         + ";NUMBER_CERTIFIED_APPLICATIONS;PERCENTAGE");
                 for (int i = 0; i < top10s[j].length; i++) {
+                    System.out.print("Length of counters: ");
+                    System.out.println(_counters.length);
+                    System.out.println(_counters[j]);
+                    System.out.print("Get top ten key: ");
+                    System.out.print(top10s[j][i] + " ");
+                    System.out.println(_counters[j].get(top10s[j][i]));
                     w_top_ten.print(top10s[j][i] + ';'
                         + _counters[j].get(top10s[j][i]) + ';');
                     w_top_ten.print(String.format("%.1f", 100
