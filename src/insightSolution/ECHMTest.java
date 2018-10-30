@@ -1,3 +1,5 @@
+package insightSolution;
+
 /** Class for unit testing of External Chaining HashMap class.
  *  Not compiled or used in run.sh*/
 class ECHMTest {

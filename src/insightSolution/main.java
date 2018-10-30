@@ -1,3 +1,5 @@
+package insightSolution;
+
 import java.io.*;
 import java.util.Scanner;
 

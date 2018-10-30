@@ -1,3 +1,5 @@
+package insightSolution;
+
 /** A set of String values with associated count.
  * Structured as array of buckets, each containing a linked list.
  *  @author Matthew Chow
